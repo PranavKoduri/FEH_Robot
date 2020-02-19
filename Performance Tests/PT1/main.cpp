@@ -3,6 +3,9 @@
 
 int main(void)
 {
+
+    LCD.WriteLine("test");
+
     float x,y;
 
     LCD.Clear(FEHLCD::Black);
