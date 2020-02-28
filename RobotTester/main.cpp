@@ -14,7 +14,11 @@ FEHServo servo(FEHServo::Servo0);
 
 int main(void)
 {
-    LCD.Clear(BLACK);
+    LCD.Clear();
+    RPS.InitializeTouchMenu();
+
+    bool ec=true;
+
     int lpower=25;
     int rpower=25;
 
@@ -51,7 +55,12 @@ int main(void)
 
     while(true)
     {
-        SV[5].ChangeLabelFloat(cds.Value());
+        if (ec) SV[5].ChangeLabelFloat(cds.Value());
+        else{
+            SV[1].ChangeLabelFloat(RPS.X());
+            SV[3].ChangeLabelFloat(RPS.Y());
+            SV[5].ChangeLabelFloat(RPS.Heading());
+        }
         if (LCD.Touch(&x, &y))
         {
             /* Check to see if the forward or backward run icons have been touched */
@@ -61,8 +70,10 @@ int main(void)
                 right_motor.SetPercent(rpower);
                 while(Run[0].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -74,8 +85,10 @@ int main(void)
                 right_motor.SetPercent(-rpower);
                 while(Run[1].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -87,8 +100,10 @@ int main(void)
                 right_motor.SetPercent(rpower);
                 while(Run[2].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -100,8 +115,10 @@ int main(void)
                 right_motor.SetPercent(-rpower);
                 while(Run[3].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -113,8 +130,10 @@ int main(void)
                 right_motor.SetPercent(rpower);
                 while(Run[4].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -126,8 +145,10 @@ int main(void)
                 right_motor.SetPercent(0);
                 while(Run[5].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -139,8 +160,10 @@ int main(void)
                 right_motor.SetPercent(-rpower);
                 while(Run[6].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
@@ -152,12 +175,31 @@ int main(void)
                 right_motor.SetPercent(0);
                 while(Run[7].Pressed(x, y, 1))
                 {
-                    SV[1].ChangeLabelInt(left_encoder.Counts());
-                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                    if(ec){
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                    }
                 }
                 left_motor.Stop();
                 right_motor.Stop();
                 Run[7].Deselect();
+            }
+            else if (SV[5].Pressed(x, y, 0))
+            {
+                if (ec){
+                    ec=false;
+                    SV[0].ChangeLabelString("X:");
+                    SV[2].ChangeLabelString("Y:");
+                    SV[4].ChangeLabelString("Head:");
+                } else {
+                    ec=true;
+                    SV[0].ChangeLabelString("Left:");
+                    SV[2].ChangeLabelString("Right:");
+                    SV[4].ChangeLabelString("CDS:");
+                    SV[1].ChangeLabelInt(left_encoder.Counts());
+                    SV[3].ChangeLabelInt(right_encoder.Counts());
+                }
+                SV[5].Deselect();
             }
             else if (Serv[0].Pressed(x, y, 0))
             {
@@ -165,7 +207,7 @@ int main(void)
                 {
                     /* While the run button is being touched, increase or decrease the servo angle within the limits */
                     LCD.Touch(&x, &y);
-                    deg = deg+1;
+                    deg++;
                     if (deg>135)
                     {
                         deg = 135;
@@ -181,7 +223,7 @@ int main(void)
                 {
                     /* While the run button is being touched, increase or decrease the servo angle within the limits */
                     LCD.Touch(&x, &y);
-                    deg = deg-1;
+                    deg--;
                     if (deg<0)
                     {
                         deg = 0;
