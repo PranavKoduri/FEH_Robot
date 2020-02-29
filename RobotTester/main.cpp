@@ -4,9 +4,7 @@
 #include <FEHMotor.h>
 #include <FEHRPS.h>
 #include <FEHServo.h>
-#include <cmath>
 
-#define PI 3.14159265358979
 #define sleepcheck 0.1
 #define powercheck 18
 
@@ -248,7 +246,7 @@ void check_y_plus(float y_coordinate, float x, float y) //using RPS while robot 
 int main(void)
 {
     LCD.Clear();
-    RPS.InitializeTouchMenu();
+    //RPS.InitializeTouchMenu();
 
     /** -----------       Create icons for first multipurpose menu ------------        */
     FEHIcon::Icon Reset[1];
@@ -270,13 +268,13 @@ int main(void)
     char s_labels[3][20] = {"v","^","0"};
     /** -------------------            Create icons for RPS menu -------------------         */
     FEHIcon::Icon XC[15];
-    char xcl[15][20]={"","^","^","","^","X:","0","0",".","0","","v","v","","v"};
+    char xcl[15][20]={"","^","^","","^","X","0","0",".","0","","v","v","","v"};
 
     FEHIcon::Icon YC[15];
-    char ycl[15][20]={"","^","^","","^","Y:","0","0",".","0","","v","v","","v"};
+    char ycl[15][20]={"","^","^","","^","Y","0","0",".","0","","v","v","","v"};
 
     FEHIcon::Icon HC[18];
-    char hcl[18][20]={"","^","^","^","","^","H:","0","0","0",".","0","","v","v","v","","v"};
+    char hcl[18][20]={"","^","^","^","","^","H","0","0","0",".","0","","v","v","v","","v"};
 
     FEHIcon::Icon rpsdisp[6];
     char rpsl[6][20]={"X:","","Y:","","H:",""};
@@ -286,13 +284,28 @@ int main(void)
 
     //also uses reset from multipurpose
     char toshaft[1][20]={"Shaft"};
+    /** ------------------------        Create icons for shaft encoder menu -----------------        */
+    FEHIcon::Icon EC[12];
+    char ecl[12][20]={"^","^","^","^","0","0","0","0","v","v","v","v"};
+
+    //declared above, also uses startstop from rps
+    char sl[1][20]={"Stop"};
+
+    //also uses Run from multipurpose
+
+    //also uses SV from multipurpose
+    char sh_labels[6][20] = {"Left:", "0", "Right:", "0","Avg:","0"};
+
+    //also uses reset from multipurpose
+    char tohome[1][20]={"Home"};
+    /** ----------------------------------             DONE              ---------------------------------- */
 
     float x, y;
 
     //multipurpose vars
     servo.SetDegree(0);
     int deg=0;
-    bool ec=true;
+    bool ec=true; //also for shaft
     int lpower=25;
     int rpower=25;
 
@@ -301,14 +314,17 @@ int main(void)
     int yrps[3]={0,0,0};
     int hrps[4]={0,0,0,0};
 
+    //shaft vars
+    int sh[4]={0,0,0,0};
+
     while(true)
     {
-        FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 0, 260, back_label, WHITE, WHITE);
-        FEHIcon::DrawIconArray(SV, 3, 2, 0, 150, 1, 150, sv_labels, WHITE, WHITE);
+        FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 1, 256, back_label, WHITE, WHITE);
+        FEHIcon::DrawIconArray(SV, 3, 2, 1, 150, 1, 150, sv_labels, WHITE, WHITE);
         FEHIcon::DrawIconArray(LM, 3, 2, 97,53,20, 220, lm_labels, BLUE, BLUE);
         FEHIcon::DrawIconArray(RM, 3, 2, 97, 53, 100,140 , rm_labels, RED, RED);
         FEHIcon::DrawIconArray(Run, 4, 2, 10, 21, 201, 1, run_labels, WHITE, WHITE);
-        FEHIcon::DrawIconArray(Serv, 1, 3, 205, 5, 70, 130, s_labels, WHITE, WHITE);
+        FEHIcon::DrawIconArray(Serv, 1, 3, 205, 5, 72, 128, s_labels, WHITE, WHITE);
         ec=true;
         SV[1].ChangeLabelInt(left_encoder.Counts());
         SV[3].ChangeLabelInt(right_encoder.Counts());
@@ -608,8 +624,8 @@ int main(void)
         FEHIcon::DrawIconArray(YC, 3, 5, 5, 145, 150, 70, ycl, BLUE, WHITE);
         FEHIcon::DrawIconArray(HC, 3, 6, 105, 45, 5, 185, hcl, BLUE, WHITE);
         FEHIcon::DrawIconArray(rpsdisp, 3, 2, 105, 45, 150, 10, rpsl, WHITE, WHITE);
-        FEHIcon::DrawIconArray(startstop, 1, 1, 205, 5, 20, 250, ssl, BLUE, WHITE);
-        FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 100, 170, toshaft, BLUE, WHITE);
+        FEHIcon::DrawIconArray(startstop, 1, 1, 205, 5, 20, 230, ssl, BLUE, WHITE);
+        FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 150, 100, toshaft, BLUE, WHITE);
         XC[6].ChangeLabelInt(xrps[0]);
         XC[7].ChangeLabelInt(xrps[1]);
         XC[9].ChangeLabelInt(xrps[2]);
@@ -777,6 +793,265 @@ int main(void)
                 }
             }
         }
+
+        FEHIcon::DrawIconArray(EC, 3, 4, 5, 145, 5, 215, ecl, BLUE, WHITE);
+        FEHIcon::DrawIconArray(Run, 4, 2, 10, 21, 201, 1, run_labels, WHITE, WHITE);
+        FEHIcon::DrawIconArray(SV, 3, 2, 105, 45, 1, 150, sh_labels, WHITE, WHITE);
+        FEHIcon::DrawIconArray(startstop, 1, 1, 205, 5, 20, 230, sl, BLUE, WHITE);
+        FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 120, 140, tohome, BLUE, WHITE);
+        EC[6].ChangeLabelInt(sh[0]);
+        EC[7].ChangeLabelInt(sh[1]);
+        EC[8].ChangeLabelInt(sh[2]);
+        EC[9].ChangeLabelInt(sh[3]);
+        ec=true;
+        SV[1].ChangeLabelInt(0);
+        SV[3].ChangeLabelInt(0);
+        SV[5].ChangeLabelInt(0);
+
+        while(true){
+            if (!ec){
+                SV[1].ChangeLabelFloat(RPS.X());
+                SV[3].ChangeLabelFloat(RPS.Y());
+                SV[5].ChangeLabelFloat(RPS.Heading());
+            }
+            if (LCD.Touch(&x, &y))
+            {
+                if (EC[0].Pressed(x, y, 0))
+                {
+                    sh[0]==1;
+                    EC[4].ChangeLabelInt(1);
+                    EC[0].Deselect();
+                } else if (EC[1].Pressed(x, y, 0)) {
+                    sh[1]++;
+                    if (sh[1]>9) sh[1]=9;
+                    EC[5].ChangeLabelInt(sh[1]);
+                    EC[1].Deselect();
+                } else if (EC[2].Pressed(x, y, 0)) {
+                    sh[2]++;
+                    if (sh[2]>9) sh[2]=9;
+                    EC[6].ChangeLabelInt(sh[2]);
+                    EC[2].Deselect();
+                } else if (EC[3].Pressed(x, y, 0)) {
+                    sh[3]++;
+                    if (sh[3]>9) sh[3]=9;
+                    EC[7].ChangeLabelInt(sh[3]);
+                    EC[3].Deselect();
+                } else if (EC[8].Pressed(x, y, 0)){
+                    sh[0]==0;
+                    EC[4].ChangeLabelInt(0);
+                    EC[8].Deselect();
+                } else if (EC[9].Pressed(x, y, 0)) {
+                    sh[1]--;
+                    if (sh[1]<0) sh[1]=0;
+                    EC[5].ChangeLabelInt(sh[1]);
+                    EC[9].Deselect();
+                } else if (EC[10].Pressed(x, y, 0)) {
+                    sh[2]--;
+                    if (xrps[2]<0) sh[2]=0;
+                    EC[6].ChangeLabelInt(sh[2]);
+                    EC[10].Deselect();
+                } else if (EC[11].Pressed(x, y, 0)) {
+                    sh[3]--;
+                    if (xrps[3]<0) sh[3]=0;
+                    EC[7].ChangeLabelInt(sh[3]);
+                    EC[11].Deselect();
+                } else if (SV[5].Pressed(x, y, 0)) {
+                    if (ec){
+                        ec=false;
+                        SV[0].ChangeLabelString("X:");
+                        SV[2].ChangeLabelString("Y:");
+                        SV[4].ChangeLabelString("Head:");
+                    } else {
+                        ec=true;
+                        SV[0].ChangeLabelString("Left:");
+                        SV[2].ChangeLabelString("Right:");
+                        SV[4].ChangeLabelString("Avg:");
+                        SV[1].ChangeLabelInt(left_encoder.Counts());
+                        SV[3].ChangeLabelInt(right_encoder.Counts());
+                        SV[5].ChangeLabelInt((left_encoder.Counts()+right_encoder.Counts())/2.0);
+                    }
+                    SV[5].Deselect();
+                } else if (Run[0].Pressed(x, y, 0)) {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(lpower);
+                    right_motor.SetPercent(rpower);
+                    while((left_encoder.Counts() + right_encoder.Counts()) / 2. < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[0].Deselect();
+                }
+                else if (Run[1].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(-lpower);
+                    right_motor.SetPercent(-rpower);
+                    while((left_encoder.Counts() + right_encoder.Counts()) / 2. < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[1].Deselect();
+                }
+                else if (Run[2].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(-lpower);
+                    right_motor.SetPercent(rpower);
+                    while((left_encoder.Counts() + right_encoder.Counts()) / 2. < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[2].Deselect();
+                }
+                else if (Run[3].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(lpower);
+                    right_motor.SetPercent(-rpower);
+                    while((left_encoder.Counts() + right_encoder.Counts()) / 2. < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[3].Deselect();
+                }
+                else if (Run[4].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(0);
+                    right_motor.SetPercent(rpower);
+                    while(right_encoder.Counts() < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[4].Deselect();
+                }
+                else if (Run[5].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(lpower);
+                    right_motor.SetPercent(0);
+                    while(left_encoder.Counts() < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[5].Deselect();
+                }
+                else if (Run[6].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(0);
+                    right_motor.SetPercent(-rpower);
+                    while(right_encoder.Counts() < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[6].Deselect();
+                }
+                else if (Run[7].Pressed(x, y, 0))
+                {
+                    right_encoder.ResetCounts();
+                    left_encoder.ResetCounts();
+                    int counts=1000*sh[0]+100*sh[1]+sh[2]*10+sh[3];
+                    left_motor.SetPercent(-lpower);
+                    right_motor.SetPercent(0);
+                    while(left_encoder.Counts() < counts)
+                    {
+                        if(ec){
+                            SV[1].ChangeLabelInt(left_encoder.Counts());
+                            SV[3].ChangeLabelInt(right_encoder.Counts());
+                            SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
+                        }
+                        if (startstop[0].Pressed(x,y,0)){
+                            break;
+                        }
+                    }
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Run[7].Deselect();
+                } else if (Reset[0].Pressed(x, y, 0)){
+                    LCD.Clear();
+                    break;
+                }
+            }
+        }
+
     }
     return 0;
 }
