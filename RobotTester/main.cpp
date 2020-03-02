@@ -35,6 +35,10 @@ void check_heading(float heading, float x, float y) //using RPS
             while(RPS.Heading() < upper && RPS.Heading() > lower)
             {
                 if (startstop[0].Pressed(x,y,1)){
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Sleep(1.0);
+                    LCD.ClearBuffer();
                     break;
                 }
                 if(RPS.Heading() < 180)
@@ -66,6 +70,10 @@ void check_heading(float heading, float x, float y) //using RPS
             while(RPS.Heading() < heading - 1 || RPS.Heading() > heading + 1)
             {
                 if (startstop[0].Pressed(x,y,1)){
+                    left_motor.Stop();
+                    right_motor.Stop();
+                    Sleep(1.0);
+                    LCD.ClearBuffer();
                     break;
                 }
                 if(RPS.Heading() > heading)
@@ -104,6 +112,10 @@ void check_x_minus(float x_coordinate, float x, float y) //using RPS while robot
         while(RPS.X() < x_coordinate - 0.2 || RPS.X() > x_coordinate + 0.2)
         {
             if (startstop[0].Pressed(x,y,1)){
+                left_motor.Stop();
+                right_motor.Stop();
+                Sleep(1.0);
+                LCD.ClearBuffer();
                 break;
             }
             if(RPS.X() > x_coordinate)
@@ -141,6 +153,10 @@ void check_x_plus(float x_coordinate, float x, float y) //using RPS while robot 
         while(RPS.X() < x_coordinate - 0.2 || RPS.X() > x_coordinate + 0.2)
         {
             if (startstop[0].Pressed(x,y,1)){
+                left_motor.Stop();
+                right_motor.Stop();
+                Sleep(1.0);
+                LCD.ClearBuffer();
                 break;
             }
             if(RPS.X() > x_coordinate)
@@ -178,6 +194,10 @@ void check_y_minus(float y_coordinate, float x, float y) //using RPS while robot
         while(RPS.Y() < y_coordinate - 0.2 || RPS.Y() > y_coordinate + 0.2)
         {
             if (startstop[0].Pressed(x,y,1)){
+                left_motor.Stop();
+                right_motor.Stop();
+                Sleep(1.0);
+                LCD.ClearBuffer();
                 break;
             }
             if(RPS.Y() > y_coordinate)
@@ -215,6 +235,10 @@ void check_y_plus(float y_coordinate, float x, float y) //using RPS while robot 
         while(RPS.Y() < y_coordinate - 0.2 || RPS.Y() > y_coordinate + 0.2)
         {
             if (startstop[0].Pressed(x,y,1)){
+                left_motor.Stop();
+                right_motor.Stop();
+                Sleep(1.0);
+                LCD.ClearBuffer();
                 break;
             }
             if(RPS.Y() > y_coordinate)
@@ -799,10 +823,10 @@ int main(void)
         FEHIcon::DrawIconArray(SV, 3, 2, 105, 45, 1, 150, sh_labels, WHITE, WHITE);
         FEHIcon::DrawIconArray(startstop, 1, 1, 205, 5, 20, 230, sl, BLUE, WHITE);
         FEHIcon::DrawIconArray(Reset, 1, 1, 205, 5, 120, 140, tohome, BLUE, WHITE);
-        EC[6].ChangeLabelInt(sh[0]);
-        EC[7].ChangeLabelInt(sh[1]);
-        EC[8].ChangeLabelInt(sh[2]);
-        EC[9].ChangeLabelInt(sh[3]);
+        EC[4].ChangeLabelInt(sh[0]);
+        EC[5].ChangeLabelInt(sh[1]);
+        EC[6].ChangeLabelInt(sh[2]);
+        EC[7].ChangeLabelInt(sh[3]);
         ec=true;
         SV[1].ChangeLabelInt(0);
         SV[3].ChangeLabelInt(0);
@@ -818,7 +842,7 @@ int main(void)
             {
                 if (EC[0].Pressed(x, y, 0))
                 {
-                    sh[0]==1;
+                    sh[0]=1;
                     EC[4].ChangeLabelInt(1);
                     EC[0].Deselect();
                 } else if (EC[1].Pressed(x, y, 0)) {
@@ -837,7 +861,7 @@ int main(void)
                     EC[7].ChangeLabelInt(sh[3]);
                     EC[3].Deselect();
                 } else if (EC[8].Pressed(x, y, 0)){
-                    sh[0]==0;
+                    sh[0]=0;
                     EC[4].ChangeLabelInt(0);
                     EC[8].Deselect();
                 } else if (EC[9].Pressed(x, y, 0)) {
@@ -847,12 +871,12 @@ int main(void)
                     EC[9].Deselect();
                 } else if (EC[10].Pressed(x, y, 0)) {
                     sh[2]--;
-                    if (xrps[2]<0) sh[2]=0;
+                    if (sh[2]<0) sh[2]=0;
                     EC[6].ChangeLabelInt(sh[2]);
                     EC[10].Deselect();
                 } else if (EC[11].Pressed(x, y, 0)) {
                     sh[3]--;
-                    if (xrps[3]<0) sh[3]=0;
+                    if (sh[3]<0) sh[3]=0;
                     EC[7].ChangeLabelInt(sh[3]);
                     EC[11].Deselect();
                 } else if (SV[5].Pressed(x, y, 0)) {
@@ -884,7 +908,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -906,7 +930,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -928,7 +952,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -950,7 +974,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -972,7 +996,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -994,7 +1018,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -1016,7 +1040,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
@@ -1038,7 +1062,7 @@ int main(void)
                             SV[3].ChangeLabelInt(right_encoder.Counts());
                             SV[5].ChangeLabelInt((left_encoder.Counts() + right_encoder.Counts()) / 2.);
                         }
-                        if (startstop[0].Pressed(x,y,0)){
+                        if (LCD.Touch(&x, &y) && startstop[0].Pressed(x,y,0)){
                             break;
                         }
                     }
